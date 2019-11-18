@@ -32,6 +32,7 @@ import {
   Thumbnail,
   Footer,
   FooterTab,
+  Picker,
 } from 'native-base';
 import Dialog, {
   DialogTitle,
@@ -94,6 +95,7 @@ export default class Home extends Component {
       isLoading: false,
       visibleSignIn: false,
       visibleLogin: false,
+      selected: 'key1',
       games: [],
       images: [{url: IconAd1}, {url: IconAd2}],
     };
@@ -145,6 +147,12 @@ export default class Home extends Component {
       return colors.transparent;
     }
   };
+
+  _onValueChange(value: string) {
+    this.setState({
+      selected: value,
+    });
+  }
 
   render() {
     return (
@@ -394,6 +402,75 @@ export default class Home extends Component {
                 }
                 textStyle={styles.textTab}>
                 <View style={styles.container}>
+                  <Card noShadow>
+                    <CardItem>
+                      <Body>
+                        <Text>Pto de Venta: 306</Text>
+                        <Text>Lugar: Cartago</Text>
+                      </Body>
+                      <Right>
+                        <Text>Saldo: &#8353;2000</Text>
+                      </Right>
+                    </CardItem>
+                    <CardItem cardBody>
+                      <Left>
+                        <Text>Seleccione el juego:</Text>
+                        <Picker
+                          light
+                          mode="dropdown"
+                          iosHeader="Select your SIM"
+                          iosIcon={<Icon name="arrow-down" />}
+                          style={{width: undefined, color:'#fff'}}
+                          selectedValue={this.state.selected}
+                          onValueChange={this._onValueChange.bind(this)}>
+                          <Picker.Item label="LOTTO" value="key0" />
+                          <Picker.Item label="Loteria" value="key1" />
+                        </Picker>
+                        {/* <Button transparent>
+                          <Text>Holi: hello</Text>
+                        </Button> */}
+                      </Left>
+                    </CardItem>
+                    <CardItem>
+                          <View style={{flex: 1}}>
+                            <Form>
+                              <Item fixedLabel last>
+                                <Label style={{color: colors.white}}>
+                                Número #:
+                                </Label>
+                                <Input
+                                  style={{color: colors.white}}
+                                  returnKeyType={'next'}
+                                  keyboardType={'numeric'}
+                                />
+                              </Item>
+                            </Form>
+                          </View>
+                    </CardItem>
+                    <CardItem>
+                          <View style={{flex: 1}}>
+                            <Form>
+                              <Item fixedLabel last>
+                                <Label style={{color: colors.white}}>
+                                Monto &#8353;:
+                                </Label>
+                                <Input
+                                  style={{color: colors.white}}
+                                  returnKeyType={'done'}
+                                  keyboardType={'numeric'}
+                                />
+                              </Item>
+                            </Form>
+                          </View>
+                    </CardItem>
+                    <CardItem>
+                      <Body>
+                        <Button style={{backgroundColor: '#FCB537'}} block>
+                          <Text style={{color: '#fff'}}>Jugar</Text>
+                        </Button>
+                      </Body>
+                    </CardItem>
+                  </Card>
                   <FlatList
                     data={this.state.games}
                     renderItem={({item}) => (
