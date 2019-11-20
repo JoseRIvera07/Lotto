@@ -142,7 +142,7 @@ export default {
   brandLight: '#f4f4f4',
 
   // Container
-  containerBgColor: '#fff',
+  containerBgColor: '#FCB537',
 
   // Date Picker
   datePickerFlex: 1,

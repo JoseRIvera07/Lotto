@@ -21,6 +21,7 @@ import {
   Body,
   Title,
   Container,
+  Content,
   Button,
   Form,
   Item,
@@ -68,7 +69,7 @@ class ContentView extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text>Welcome to React Native!</Text>
+        <Text>{Home.state.register.name}</Text>
         <Text>To get started, edit index.ios.js</Text>
         <Text>
           Press Cmd+R to reload,{'\n'}
@@ -88,6 +89,24 @@ export default class Home extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      drawer: {
+        name: 'Inicia sesión para ver tu perfil',
+        sni: '',
+        user: '',
+      },
+      register: {
+        name: '',
+        fname: '',
+        lname: '',
+        sni: '',
+        user: '',
+        password: '',
+        cpassword: '',
+      },
+      login: {
+        user: '',
+        password: '',
+      },
       position: 1,
       interval: null,
       drawerState: false,
@@ -104,7 +123,6 @@ export default class Home extends Component {
 
   async componentDidMount() {
     StatusBar.setHidden(true);
-    //await this._getGames();
   }
 
   componentWillMount() {
@@ -124,22 +142,6 @@ export default class Home extends Component {
     clearInterval(this.state.interval);
   }
 
-  _getGames = email => {
-    client
-      .fetch(`*[_type == 'game' && user.sni == '304560456' ]{..., category->}`)
-      .then(res => {
-        this.setState({games: res});
-        this.arrayholder = this.state.games;
-        console.log(this.arrayholder);
-      })
-      .catch(err => {
-        this.setState({isLoading: false});
-        Alert.alert(SCREENS.HOME, ALERTS.FAILURE, [{text: BUTTONS.OK}], {
-          cancelable: false,
-        });
-      });
-  };
-
   _drawerState = ratio => {
     if (ratio != 0) {
       return colors.overlay;
@@ -148,18 +150,234 @@ export default class Home extends Component {
     }
   };
 
-  _onValueChange(value: string) {
+  _onValueChange(value) {
     this.setState({
       selected: value,
     });
   }
+
+  _login = () => {
+    if (this.state.login.user != '' && this.state.login.password != '') {
+      if (this.state.login.password == this.state.register.password) {
+        this.setState({
+          drawer: {
+            name:
+              this.state.register.name +
+              ' ' +
+              this.state.register.fname +
+              ' ' +
+              this.state.register.lname,
+            sni: this.state.register.sni,
+            user: this.state.register.user,
+          },
+        });
+        this.setState({visibleLogin: false});
+      } else {
+        Alert.alert(
+          TITLES.LOGIN,
+          'Usuario o contraseña incorrecta',
+          [{text: BUTTONS.OK}],
+          {cancelable: false},
+        );
+      }
+    } else {
+      Alert.alert(
+        TITLES.LOGIN,
+        'Debe ingresar usuario y contraseña',
+        [{text: BUTTONS.OK}],
+        {cancelable: false},
+      );
+    }
+  };
+
+  _logout = () => {
+    this.setState({
+      drawer: {
+        name: 'Inicia sesión para ver tu perfil',
+        sni: '',
+        user: '',
+      },
+      register: {
+        name: '',
+        fname: '',
+        lname: '',
+        sni: '',
+        user: '',
+        password: '',
+        cpassword: '',
+      },
+      login: {
+        user: '',
+        password: '',
+      },
+    });
+  };
+
+  _onLoginTextChangedPassword = event => {
+    event.persist();
+    this.setState(prevState => ({
+      login: {
+        ...prevState.login,
+        password: event.nativeEvent.text,
+      },
+    }));
+  };
+
+  _onLoginTextChangedUser = event => {
+    event.persist();
+    this.setState(prevState => ({
+      login: {
+        ...prevState.login,
+        user: event.nativeEvent.text,
+      },
+    }));
+  };
+
+  _onRegisterTextChangedCpassword = event => {
+    event.persist();
+    this.setState(prevState => ({
+      register: {
+        ...prevState.register,
+        cpassword: event.nativeEvent.text,
+      },
+    }));
+  };
+
+  _onRegisterTextChangedCpassword = event => {
+    event.persist();
+    this.setState(prevState => ({
+      register: {
+        ...prevState.register,
+        cpassword: event.nativeEvent.text,
+      },
+    }));
+  };
+
+  _onRegisterTextChangedFname = event => {
+    event.persist();
+    this.setState(prevState => ({
+      register: {
+        ...prevState.register,
+        fname: event.nativeEvent.text,
+      },
+    }));
+  };
+
+  _onRegisterTextChangedLname = event => {
+    event.persist();
+    this.setState(prevState => ({
+      register: {
+        ...prevState.register,
+        lname: event.nativeEvent.text,
+      },
+    }));
+  };
+
+  _onRegisterTextChangedName = event => {
+    event.persist();
+    this.setState(prevState => ({
+      register: {
+        ...prevState.register,
+        name: event.nativeEvent.text,
+      },
+    }));
+  };
+
+  _onRegisterTextChangedPassword = event => {
+    event.persist();
+    this.setState(prevState => ({
+      register: {
+        ...prevState.register,
+        password: event.nativeEvent.text,
+      },
+    }));
+  };
+
+  _onRegisterTextChangedSni = event => {
+    event.persist();
+    this.setState(prevState => ({
+      register: {
+        ...prevState.register,
+        sni: event.nativeEvent.text,
+      },
+    }));
+  };
+
+  _onRegisterTextChangedUser = event => {
+    event.persist();
+    this.setState(prevState => ({
+      register: {
+        ...prevState.register,
+        user: event.nativeEvent.text,
+      },
+    }));
+  };
+
+  _register = () => {
+    if (
+      this.state.register.name != '' &&
+      this.state.register.fname != '' &&
+      this.state.register.lname != '' &&
+      this.state.register.sni != '' &&
+      this.state.register.user != '' &&
+      this.state.register.password != '' &&
+      this.state.register.cpassword != ''
+    ) {
+      if (this.state.register.password == this.state.register.cpassword) {
+        this.setState({visibleSignIn: false});
+      } else {
+        Alert.alert(
+          TITLES.REGISTRO,
+          'La contraseña no coincide',
+          [{text: BUTTONS.OK}],
+          {
+            cancelable: false,
+          },
+        );
+      }
+    } else {
+      Alert.alert(
+        TITLES.REGISTRO,
+        'Todos los campos son obligatorios',
+        [{text: BUTTONS.OK}],
+        {cancelable: false},
+      );
+    }
+  };
 
   render() {
     return (
       <Drawer
         type="overlay"
         ref={ref => (this._drawer = ref)}
-        content={<ContentView />}
+        content={
+          <StyleProvider style={getTheme(platform)}>
+            <View style={styles.container}>
+              <Container>
+                <Card>
+                  <CardItem bordered>
+                    <Text>{this.state.drawer.name}</Text>
+                  </CardItem>
+                  <CardItem>
+                    <Body>
+                      <Text>Cédula: {this.state.drawer.sni}</Text>
+                    </Body>
+                  </CardItem>
+                  <CardItem>
+                    <Text>Usuario: {this.state.drawer.user}</Text>
+                  </CardItem>
+                  <CardItem>
+                      <Body>
+                        <Button style={{backgroundColor: '#FCB537'}} onPress={this._logout} block>
+                          <Text style={{color: '#fff'}}>Cerrar Sesión</Text>
+                        </Button>
+                      </Body>
+                    </CardItem>
+                </Card>
+              </Container>
+            </View>
+          </StyleProvider>
+        }
         tapToClose={true}
         openDrawerOffset={0.3}
         styles={drawerStyles}
@@ -250,7 +468,9 @@ export default class Home extends Component {
                         <DialogButton
                           text={BUTTONS.ACEPTAR}
                           textStyle={{color: colors.white}}
-                          onPress={() => {}}
+                          onPress={() => {
+                            this._register();
+                          }}
                         />
                       </DialogFooter>
                     }>
@@ -265,6 +485,7 @@ export default class Home extends Component {
                               <Input
                                 style={{color: colors.white}}
                                 returnKeyType={'next'}
+                                onChange={this._onRegisterTextChangedName}
                               />
                             </Item>
                             <Item floatingLabel last>
@@ -274,6 +495,7 @@ export default class Home extends Component {
                               <Input
                                 style={{color: colors.white}}
                                 returnKeyType={'next'}
+                                onChange={this._onRegisterTextChangedFname}
                               />
                             </Item>
                             <Item floatingLabel last>
@@ -283,6 +505,7 @@ export default class Home extends Component {
                               <Input
                                 style={{color: colors.white}}
                                 returnKeyType={'next'}
+                                onChange={this._onRegisterTextChangedLname}
                               />
                             </Item>
                             <Item floatingLabel last>
@@ -292,6 +515,7 @@ export default class Home extends Component {
                               <Input
                                 style={{color: colors.white}}
                                 returnKeyType={'next'}
+                                onChange={this._onRegisterTextChangedSni}
                               />
                             </Item>
                             <Item floatingLabel last>
@@ -301,6 +525,7 @@ export default class Home extends Component {
                               <Input
                                 style={{color: colors.white}}
                                 returnKeyType={'next'}
+                                onChange={this._onRegisterTextChangedUser}
                               />
                             </Item>
                             <Item floatingLabel last>
@@ -310,6 +535,7 @@ export default class Home extends Component {
                               <Input
                                 style={{color: colors.white}}
                                 returnKeyType={'next'}
+                                onChange={this._onRegisterTextChangedPassword}
                                 secureTextEntry
                               />
                             </Item>
@@ -320,6 +546,7 @@ export default class Home extends Component {
                               <Input
                                 style={{color: colors.white}}
                                 returnKeyType={'done'}
+                                onChange={this._onRegisterTextChangedCpassword}
                                 secureTextEntry
                               />
                             </Item>
@@ -358,7 +585,9 @@ export default class Home extends Component {
                         <DialogButton
                           text={BUTTONS.ACEPTAR}
                           textStyle={{color: colors.white}}
-                          onPress={() => {}}
+                          onPress={() => {
+                            this._login();
+                          }}
                         />
                       </DialogFooter>
                     }>
@@ -374,6 +603,7 @@ export default class Home extends Component {
                               <Input
                                 style={{color: colors.white}}
                                 returnKeyType={'next'}
+                                onChange={this._onLoginTextChangedUser}
                               />
                             </Item>
                             <Item floatingLabel last>
@@ -383,6 +613,7 @@ export default class Home extends Component {
                               <Input
                                 style={{color: colors.white}}
                                 returnKeyType={'done'}
+                                onChange={this._onLoginTextChangedPassword}
                                 secureTextEntry
                               />
                             </Item>
@@ -420,7 +651,7 @@ export default class Home extends Component {
                           mode="dropdown"
                           iosHeader="Select your SIM"
                           iosIcon={<Icon name="arrow-down" />}
-                          style={{width: undefined, color:'#fff'}}
+                          style={{width: undefined, color: '#fff'}}
                           selectedValue={this.state.selected}
                           onValueChange={this._onValueChange.bind(this)}>
                           <Picker.Item label="LOTTO" value="key0" />
@@ -432,36 +663,36 @@ export default class Home extends Component {
                       </Left>
                     </CardItem>
                     <CardItem>
-                          <View style={{flex: 1}}>
-                            <Form>
-                              <Item fixedLabel last>
-                                <Label style={{color: colors.white}}>
-                                Número #:
-                                </Label>
-                                <Input
-                                  style={{color: colors.white}}
-                                  returnKeyType={'next'}
-                                  keyboardType={'numeric'}
-                                />
-                              </Item>
-                            </Form>
-                          </View>
+                      <View style={{flex: 1}}>
+                        <Form>
+                          <Item fixedLabel last>
+                            <Label style={{color: colors.white}}>
+                              Número #:
+                            </Label>
+                            <Input
+                              style={{color: colors.white}}
+                              returnKeyType={'next'}
+                              keyboardType={'numeric'}
+                            />
+                          </Item>
+                        </Form>
+                      </View>
                     </CardItem>
                     <CardItem>
-                          <View style={{flex: 1}}>
-                            <Form>
-                              <Item fixedLabel last>
-                                <Label style={{color: colors.white}}>
-                                Monto &#8353;:
-                                </Label>
-                                <Input
-                                  style={{color: colors.white}}
-                                  returnKeyType={'done'}
-                                  keyboardType={'numeric'}
-                                />
-                              </Item>
-                            </Form>
-                          </View>
+                      <View style={{flex: 1}}>
+                        <Form>
+                          <Item fixedLabel last>
+                            <Label style={{color: colors.white}}>
+                              Monto &#8353;:
+                            </Label>
+                            <Input
+                              style={{color: colors.white}}
+                              returnKeyType={'done'}
+                              keyboardType={'numeric'}
+                            />
+                          </Item>
+                        </Form>
+                      </View>
                     </CardItem>
                     <CardItem>
                       <Body>
