@@ -3,6 +3,7 @@ import {
   StatusBar,
   Image,
   View,
+  ScrollView,
   FlatList,
   StyleSheet,
   Alert,
@@ -65,21 +66,6 @@ import Slideshow from 'react-native-image-slider-show';
 
 const builder = imageUrlBuilder(client);
 
-class ContentView extends React.Component {
-  render() {
-    return (
-      <View style={styles.container}>
-        <Text>{Home.state.register.name}</Text>
-        <Text>To get started, edit index.ios.js</Text>
-        <Text>
-          Press Cmd+R to reload,{'\n'}
-          Cmd+Control+Z for dev menu
-        </Text>
-      </View>
-    );
-  }
-}
-
 export default class Home extends Component {
   static navigationOptions = {
     title: SCREENS.HOME,
@@ -109,8 +95,14 @@ export default class Home extends Component {
         password: '',
         amount: 2000,
       },
-      control: 1,
-      isLogged: false,
+      nS: 0,
+      aS: 0,
+      nC: 0,
+      aC: 0,
+      nL: 0,
+      aL: 0,
+      isLogged: true,
+      isRecharge: true,
       position: 1,
       interval: null,
       drawerState: false,
@@ -118,9 +110,9 @@ export default class Home extends Component {
       isLoading: false,
       visibleSignIn: false,
       visibleLogin: false,
-      selected: 'key0',
+      selected: '0',
       choosenIndex: 0,
-      games: [],
+      history: [],
       lotto: [],
       loteria: [],
       chances: [],
@@ -153,33 +145,25 @@ export default class Home extends Component {
 
   _addCredit = () => {
     this.setState(prevState => ({
-      games: [
-        {
-          cod: '301',
-          point: 'Sán José',
-          game: '0',
-        },
-        {
-          cod: '302',
-          point: 'Alajuela',
-          game: '0',
-        },
-        {
-          cod: '303',
-          point: 'Cartago',
-          game: '0',
-        },
-        {
-          cod: '307',
-          point: 'Limón',
-          game: '0',
-        },
-      ],
+      isRecharge: true,
       drawer: {
         ...prevState.drawer,
         amount: this.state.drawer.amount + 1000,
       },
     }));
+  };
+
+  _historyChange = (cod, amount) => {
+    temp = this.state.history;
+    for (i = 0; i < temp.length; i++) {
+      if (cod == temp[i].cod) {
+        temp[i].amount = amount;
+        break;
+      }
+    }
+    this.setState({
+      history: temp,
+    });
   };
 
   _drawerState = ratio => {
@@ -191,7 +175,7 @@ export default class Home extends Component {
   };
 
   _playGame = (game, number, amount) => {
-    if (amount <= this.state.drawer.amount){
+    if (amount <= this.state.drawer.amount) {
       if (game == '0') {
         let temp = this.state.lotto;
         temp.push([number, amount]);
@@ -217,16 +201,37 @@ export default class Home extends Component {
           panamena: temp,
         });
       }
+      this.setState(prevState => ({
+        drawer: {
+          ...prevState.drawer,
+          amount: this.state.drawer.amount - Number(amount),
+        },
+      }));
     } else {
-      alert("Saldo insuficiente")
+      alert('Saldo insuficiente');
     }
-
   };
+
+  _verificar = () => {
+    for(i = 0; i < this.state.chances.length; i++){
+      if(Number(this.state.chances[i][0])==35){
+        let algo = Number(this.state.chances[i][1]) * 80;
+        this.setState(prevState => ({
+          drawer: {
+            ...prevState.drawer,
+            amount: this.state.drawer.amount + algo,
+          },
+        }));
+        alert("Ganaste con el número 35, en el juego Chances");
+      }
+    }
+  }
 
   _login = () => {
     if (this.state.login.user != '' && this.state.login.password != '') {
       if (this.state.login.password == this.state.register.password) {
         this.setState({
+          isLogged: true,
           drawer: {
             name:
               this.state.register.name +
@@ -238,23 +243,6 @@ export default class Home extends Component {
             user: this.state.register.user,
             amount: this.state.login.amount,
           },
-          games: [
-            {
-              cod: '301',
-              point: 'San José',
-              game: '0',
-            },
-            {
-              cod: '302',
-              point: 'Alajuela',
-              game: '0',
-            },
-            {
-              cod: '303',
-              point: 'Cartago',
-              game: '0',
-            },
-          ],
         });
         this.setState({visibleLogin: false});
       } else {
@@ -399,6 +387,42 @@ export default class Home extends Component {
     }));
   };
 
+  _onNumberSj = event => {
+    this.setState({
+      nS: event.nativeEvent.text,
+    });
+  };
+
+  _onNumberC = event => {
+    this.setState({
+      nC: event.nativeEvent.text,
+    });
+  };
+
+  _onNumberL = event => {
+    this.setState({
+      nL: event.nativeEvent.text,
+    });
+  };
+
+  _onAmountSj = event => {
+    this.setState({
+      aS: event.nativeEvent.text,
+    });
+  };
+
+  _onAmountC = event => {
+    this.setState({
+      aC: event.nativeEvent.text,
+    });
+  };
+
+  _onAmountL = event => {
+    this.setState({
+      aL: event.nativeEvent.text,
+    });
+  };
+
   _register = () => {
     if (
       this.state.register.name != '' &&
@@ -457,6 +481,12 @@ export default class Home extends Component {
                   </CardItem>
                   <CardItem>
                     <Body>
+                    <Button
+                        style={{backgroundColor: '#FCB537'}}
+                        onPress={this._verificar}
+                        block>
+                        <Text style={{color: '#fff'}}>Verificar</Text>
+                      </Button>
                       <Button
                         style={{backgroundColor: '#FCB537'}}
                         onPress={this._logout}
@@ -724,15 +754,166 @@ export default class Home extends Component {
                   </TabHeading>
                 }
                 textStyle={styles.textTab}>
-                <View style={styles.container}>
-                  <FlatList
-                    data={this.state.games}
-                    renderItem={({item}) => (
+                {this.state.isLogged ? (
+                  <ScrollView style={styles.container}>
+                    <Card noShadow>
+                      <CardItem>
+                        <Body>
+                          <Text>Pto de Venta: 305</Text>
+                          <Text>Lugar: San José</Text>
+                        </Body>
+                      </CardItem>
+                      <CardItem cardBody>
+                        <Left>
+                          <Text>Seleccione el juego:</Text>
+                          <Picker
+                            light
+                            mode="dropdown"
+                            iosHeader="Seleccione el juego"
+                            iosIcon={<Icon name="arrow-down" />}
+                            style={{width: undefined, color: '#fff'}}
+                            selectedValue={this.state.selected}
+                            onValueChange={(itemValue, itemPosition) => {
+                              this.setState({
+                                selected: itemValue,
+                                choosenIndex: itemPosition,
+                              });
+                            }}>
+                            <Picker.Item label="LOTTO" value="0" />
+                            <Picker.Item label="Loteria" value="1" />
+                            <Picker.Item label="Chances" value="2" />
+                            <Picker.Item label="Panameña" value="3" />
+                          </Picker>
+                        </Left>
+                      </CardItem>
+                      <CardItem>
+                        <View style={{flex: 1}}>
+                          <Form>
+                            <Item fixedLabel last>
+                              <Label style={{color: colors.white}}>
+                                Número #:
+                              </Label>
+                              <Input
+                                style={{color: colors.white}}
+                                returnKeyType={'next'}
+                                keyboardType={'numeric'}
+                                onChange={this._onNumberSj}
+                              />
+                            </Item>
+                          </Form>
+                        </View>
+                      </CardItem>
+                      <CardItem>
+                        <View style={{flex: 1}}>
+                          <Form>
+                            <Item fixedLabel last>
+                              <Label style={{color: colors.white}}>
+                                Monto &#8353;:
+                              </Label>
+                              <Input
+                                style={{color: colors.white}}
+                                returnKeyType={'done'}
+                                keyboardType={'numeric'}
+                                onChange={this._onAmountSj}
+                              />
+                            </Item>
+                          </Form>
+                        </View>
+                      </CardItem>
+                      <CardItem>
+                        <Body>
+                          <Button
+                            style={{backgroundColor: '#FCB537'}}
+                            onPress={this._playGame.bind(null, this.state.selected, this.state.nS, this.state.aS)}
+                            block>
+                            <Text style={{color: '#fff'}}>Jugar</Text>
+                          </Button>
+                        </Body>
+                      </CardItem>
+                    </Card>
+
+                    <Card noShadow>
+                      <CardItem>
+                        <Body>
+                          <Text>Pto de Venta: 306</Text>
+                          <Text>Lugar: Cartago</Text>
+                        </Body>
+                      </CardItem>
+                      <CardItem cardBody>
+                        <Left>
+                          <Text>Seleccione el juego:</Text>
+                          <Picker
+                            light
+                            mode="dropdown"
+                            iosHeader="Seleccione el juego"
+                            iosIcon={<Icon name="arrow-down" />}
+                            style={{width: undefined, color: '#fff'}}
+                            selectedValue={this.state.selected2}
+                            onValueChange={(itemValue, itemPosition) => {
+                              this.setState({
+                                selected2: itemValue,
+                                choosenIndex: itemPosition,
+                              });
+                            }}>
+                            <Picker.Item label="LOTTO" value="0" />
+                            <Picker.Item label="Loteria" value="1" />
+                            <Picker.Item label="Chances" value="2" />
+                            <Picker.Item label="Panameña" value="3" />
+                          </Picker>
+                        </Left>
+                      </CardItem>
+                      <CardItem>
+                        <View style={{flex: 1}}>
+                          <Form>
+                            <Item fixedLabel last>
+                              <Label style={{color: colors.white}}>
+                                Número #:
+                              </Label>
+                              <Input
+                                style={{color: colors.white}}
+                                returnKeyType={'next'}
+                                keyboardType={'numeric'}
+                                onChange={this._onNumberC}
+                              />
+                            </Item>
+                          </Form>
+                        </View>
+                      </CardItem>
+                      <CardItem>
+                        <View style={{flex: 1}}>
+                          <Form>
+                            <Item fixedLabel last>
+                              <Label style={{color: colors.white}}>
+                                Monto &#8353;:
+                              </Label>
+                              <Input
+                                style={{color: colors.white}}
+                                returnKeyType={'done'}
+                                keyboardType={'numeric'}
+                                onChange={this._onAmountC}
+                              />
+                            </Item>
+                          </Form>
+                        </View>
+                      </CardItem>
+                      <CardItem>
+                        <Body>
+                          <Button
+                            style={{backgroundColor: '#FCB537'}}
+                            onPress={this._playGame.bind(null, '0', 25, 100)}
+                            block>
+                            <Text style={{color: '#fff'}}>Jugar</Text>
+                          </Button>
+                        </Body>
+                      </CardItem>
+                    </Card>
+
+                    {this.state.isRecharge ? (
                       <Card noShadow>
                         <CardItem>
                           <Body>
-                            <Text>Pto de Venta: {item.cod}</Text>
-                            <Text>Lugar: {item.point}</Text>
+                            <Text>Pto de Venta: 307</Text>
+                            <Text>Lugar: Limón</Text>
                           </Body>
                         </CardItem>
                         <CardItem cardBody>
@@ -744,15 +925,17 @@ export default class Home extends Component {
                               iosHeader="Seleccione el juego"
                               iosIcon={<Icon name="arrow-down" />}
                               style={{width: undefined, color: '#fff'}}
-                              selectedValue={this.state.selected}
-                              onValueChange={(itemValue, itemPosition) =>
-                                {
-                                  this.setState({selected: itemValue, choosenIndex: itemPosition}); }}
-                              >
-                              <Picker.Item label="LOTTO" value="key0" />
-                              <Picker.Item label="Loteria" value="key1" />
-                              <Picker.Item label="Chances" value="key2" />
-                              <Picker.Item label="Panameña" value="key3" />
+                              selectedValue={this.state.selected3}
+                              onValueChange={(itemValue, itemPosition) => {
+                                this.setState({
+                                  selected33: itemValue,
+                                  choosenIndex: itemPosition,
+                                });
+                              }}>
+                              <Picker.Item label="LOTTO" value="0" />
+                              <Picker.Item label="Loteria" value="1" />
+                              <Picker.Item label="Chances" value="2" />
+                              <Picker.Item label="Panameña" value="3" />
                             </Picker>
                           </Left>
                         </CardItem>
@@ -767,6 +950,7 @@ export default class Home extends Component {
                                   style={{color: colors.white}}
                                   returnKeyType={'next'}
                                   keyboardType={'numeric'}
+                                  onChange={this._onNumberL}
                                 />
                               </Item>
                             </Form>
@@ -783,6 +967,7 @@ export default class Home extends Component {
                                   style={{color: colors.white}}
                                   returnKeyType={'done'}
                                   keyboardType={'numeric'}
+                                  onChange={this._onAmountL}
                                 />
                               </Item>
                             </Form>
@@ -790,26 +975,33 @@ export default class Home extends Component {
                         </CardItem>
                         <CardItem>
                           <Body>
-                            <Button style={{backgroundColor: '#FCB537'}} onPress={this._playGame.bind(null, '0', 25, 100)} block>
+                            <Button
+                              style={{backgroundColor: '#FCB537'}}
+                              onPress={this._playGame.bind(
+                                null,
+                                this.state.selected3,
+                                25,
+                                100,
+                              )}
+                              block>
                               <Text style={{color: '#fff'}}>Jugar</Text>
                             </Button>
                           </Body>
                         </CardItem>
                       </Card>
-                    )}
-                    keyExtractor={item => item.cod}
-                  />
+                    ) : null}
 
-                  <Fab
-                    active={this.state.active}
-                    direction={PROPS.UP}
-                    containerStyle={{}}
-                    style={styles.fabBg}
-                    position={PROPS.BOTTOM_RIGHT}
-                    onPress={() => this._addCredit()}>
-                    <Icon name={ICONS.MD_ADD} />
-                  </Fab>
-                </View>
+                    <Fab
+                      active={this.state.active}
+                      direction={PROPS.UP}
+                      containerStyle={{}}
+                      style={styles.fabBg}
+                      position={PROPS.BOTTOM_RIGHT}
+                      onPress={() => this._addCredit()}>
+                      <Icon name={ICONS.MD_ADD} />
+                    </Fab>
+                  </ScrollView>
+                ) : null}
               </Tab>
               <Tab
                 heading={
