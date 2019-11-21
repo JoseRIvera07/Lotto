@@ -101,8 +101,8 @@ export default class Home extends Component {
       aC: 0,
       nL: 0,
       aL: 0,
-      isLogged: true,
-      isRecharge: true,
+      isLogged: false,
+      isRecharge: false,
       position: 1,
       interval: null,
       drawerState: false,
@@ -153,14 +153,10 @@ export default class Home extends Component {
     }));
   };
 
-  _historyChange = (cod, amount) => {
+  _historyChange = data => {
     temp = this.state.history;
-    for (i = 0; i < temp.length; i++) {
-      if (cod == temp[i].cod) {
-        temp[i].amount = amount;
-        break;
-      }
-    }
+    id =
+    temp.push({description: data, id});
     this.setState({
       history: temp,
     });
@@ -207,14 +203,18 @@ export default class Home extends Component {
           amount: this.state.drawer.amount - Number(amount),
         },
       }));
+      this._historyChange(
+        'Jugaste ' + amount + ' colones ' + 'del número ' + number,
+      );
+      console.log(this.state.history);
     } else {
       alert('Saldo insuficiente');
     }
   };
 
   _verificar = () => {
-    for(i = 0; i < this.state.chances.length; i++){
-      if(Number(this.state.chances[i][0])==35){
+    for (i = 0; i < this.state.chances.length; i++) {
+      if (Number(this.state.chances[i][0]) == 35) {
         let algo = Number(this.state.chances[i][1]) * 80;
         this.setState(prevState => ({
           drawer: {
@@ -222,10 +222,10 @@ export default class Home extends Component {
             amount: this.state.drawer.amount + algo,
           },
         }));
-        alert("Ganaste con el número 35, en el juego Chances");
+        alert('Ganaste con el número 35, en el juego Chances');
       }
     }
-  }
+  };
 
   _login = () => {
     if (this.state.login.user != '' && this.state.login.password != '') {
@@ -481,7 +481,7 @@ export default class Home extends Component {
                   </CardItem>
                   <CardItem>
                     <Body>
-                    <Button
+                      <Button
                         style={{backgroundColor: '#FCB537'}}
                         onPress={this._verificar}
                         block>
@@ -824,7 +824,12 @@ export default class Home extends Component {
                         <Body>
                           <Button
                             style={{backgroundColor: '#FCB537'}}
-                            onPress={this._playGame.bind(null, this.state.selected, this.state.nS, this.state.aS)}
+                            onPress={this._playGame.bind(
+                              null,
+                              this.state.selected,
+                              this.state.nS,
+                              this.state.aS,
+                            )}
                             block>
                             <Text style={{color: '#fff'}}>Jugar</Text>
                           </Button>
@@ -1011,7 +1016,19 @@ export default class Home extends Component {
                   </TabHeading>
                 }
                 textStyle={styles.textTab}>
-                <View style={styles.container}></View>
+                <View style={styles.container}>
+                  <FlatList
+                    data={this.state.history}
+                    renderItem={({item}) => (
+                      <Card>
+                        <CardItem bordered>
+                          <Text>{item.description}</Text>
+                        </CardItem>
+                      </Card>
+                    )}
+                    keyExtractor={item => item.id}
+                  />
+                </View>
               </Tab>
             </Tabs>
           </Container>
