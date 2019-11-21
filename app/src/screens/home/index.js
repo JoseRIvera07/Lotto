@@ -151,12 +151,12 @@ export default class Home extends Component {
         amount: this.state.drawer.amount + 1000,
       },
     }));
+    this._historyChange('Recargaste 1000 colones en Limón');
   };
 
   _historyChange = data => {
     temp = this.state.history;
-    id =
-    temp.push({description: data, id});
+    temp.push({description: data, id: String(temp.length)});
     this.setState({
       history: temp,
     });
@@ -178,24 +178,36 @@ export default class Home extends Component {
         this.setState({
           lotto: temp,
         });
+        this._historyChange(
+          'Jugaste ' + amount + ' colones ' + 'del número ' + number,
+        );
       } else if (game == '1') {
         let temp = this.state.lotto;
         temp.push([number, amount]);
         this.setState({
           loteria: temp,
         });
+        this._historyChange(
+          'Jugaste ' + amount + ' colones ' + 'del número ' + number,
+        );
       } else if (game == '2') {
         let temp = this.state.lotto;
         temp.push([number, amount]);
         this.setState({
           chances: temp,
         });
+        this._historyChange(
+          'Jugaste ' + amount + ' colones ' + 'del número ' + number,
+        );
       } else if (game == '3') {
         let temp = this.state.lotto;
         temp.push([number, amount]);
         this.setState({
           panamena: temp,
         });
+        this._historyChange(
+          'Jugaste ' + amount + ' colones ' + 'del número ' + number,
+        );
       }
       this.setState(prevState => ({
         drawer: {
@@ -203,10 +215,6 @@ export default class Home extends Component {
           amount: this.state.drawer.amount - Number(amount),
         },
       }));
-      this._historyChange(
-        'Jugaste ' + amount + ' colones ' + 'del número ' + number,
-      );
-      console.log(this.state.history);
     } else {
       alert('Saldo insuficiente');
     }
@@ -223,6 +231,7 @@ export default class Home extends Component {
           },
         }));
         alert('Ganaste con el número 35, en el juego Chances');
+        this._historyChange('Ganaste con el número 35, en el juego Chances');
       }
     }
   };
@@ -1027,6 +1036,7 @@ export default class Home extends Component {
                       </Card>
                     )}
                     keyExtractor={item => item.id}
+                    extraData={this.state}
                   />
                 </View>
               </Tab>
