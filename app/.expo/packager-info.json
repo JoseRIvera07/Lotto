@@ -1,9 +1,9 @@
 {
   "expoServerPort": 19000,
   "packagerPort": 19001,
-  "packagerPid": 2400,
-  "expoServerNgrokUrl": "https://er-ykp.stevensg97.app.exp.direct",
-  "packagerNgrokUrl": "https://packager.er-ykp.stevensg97.app.exp.direct",
-  "ngrokPid": 2472,
+  "packagerPid": 10372,
+  "expoServerNgrokUrl": "https://a5-yqy.stevensg97.app.exp.direct",
+  "packagerNgrokUrl": "https://packager.a5-yqy.stevensg97.app.exp.direct",
+  "ngrokPid": 11980,
   "devToolsPort": 19002
 }
