@@ -914,7 +914,12 @@ export default class Home extends Component {
                         <Body>
                           <Button
                             style={{backgroundColor: '#FCB537'}}
-                            onPress={this._playGame.bind(null, '0', 25, 100)}
+                            onPress={this._playGame.bind(
+                              null,
+                              this.state.selected2,
+                              this.state.nC,
+                              this.state.aC,
+                            )}
                             block>
                             <Text style={{color: '#fff'}}>Jugar</Text>
                           </Button>
@@ -993,9 +998,9 @@ export default class Home extends Component {
                               style={{backgroundColor: '#FCB537'}}
                               onPress={this._playGame.bind(
                                 null,
-                                this.state.selected3,
-                                25,
-                                100,
+                                this.state.selected,
+                                this.state.nS,
+                                this.state.aS,
                               )}
                               block>
                               <Text style={{color: '#fff'}}>Jugar</Text>
@@ -1015,7 +1020,7 @@ export default class Home extends Component {
                       <Icon name={ICONS.MD_ADD} />
                     </Fab>
                   </ScrollView>
-                ) : null}
+                ) : <View style={styles.container}></View>}
               </Tab>
               <Tab
                 heading={
