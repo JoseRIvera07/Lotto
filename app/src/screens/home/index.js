@@ -998,9 +998,9 @@ export default class Home extends Component {
                               style={{backgroundColor: '#FCB537'}}
                               onPress={this._playGame.bind(
                                 null,
-                                this.state.selected,
-                                this.state.nS,
-                                this.state.aS,
+                                this.state.selected3,
+                                this.state.nL,
+                                this.state.aL,
                               )}
                               block>
                               <Text style={{color: '#fff'}}>Jugar</Text>
